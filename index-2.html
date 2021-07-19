@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Contact Form</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+		<link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+    </head>
+    <body>
+        <div class="d-flex m-4">
+            <form class="flex-fill d-flex flex-column align-items-center" style="height: 200px;">
+                <div class="form-group col-md-6 p-2 mx-auto">
+                    <label for="name">Name</label>
+                    <input type="text" placeholder="enter name" class="form-control" id="name required"/>
+                </div>
+                <div class="form-group col-md-6 p-2 mx-auto">
+                    <label for="email">Email</label>
+                    <input type="email" placeholder="enter email" class="form-control" id="email required"/>
+                </div>
+                <div class="form-group col-md-6 p-2 mx-auto">
+                    <label for="message">Message</label>
+                    <textarea placeholder="enter mesage" rows="4" class="form-control" id="message required"></textarea>
+                </div>
+                <button type="submit" class="col-md-4 btn btn-primary">Submit</button>
+            </form>
+			<div id="message-history" class="col-md-4 m-2 p-3 border border-secondary rounded fs-5">Message History</div>
+        </div>
+    </body>
+    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-database.js"></script>
+    
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyB8pUQlDEPekQ25DK93gO0kbKNci1wiW5M",
+        authDomain: "contactyou-823cb.firebaseapp.com",
+        databaseURL: "https://contactyou-823cb-default-rtdb.firebaseio.com",
+        projectId: "contactyou-823cb",
+        storageBucket: "contactyou-823cb.appspot.com",
+        messagingSenderId: "931123870480",
+        appId: "1:931123870480:web:558a1d1c8d896fbeb88395",
+        measurementId: "G-GN7J36CHFM"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    </script>
+    
+    <script>
+        $('form').on('submit', function(){
+            event.preventDefault();
+            
+            let data = {
+                name: $('#name').val(),
+                email: $('#email').val(),
+                message: $('#message').val()
+            }
+
+            firebase.database().ref('test/'+data.name).set(data, function(error){
+                if (error)
+                {
+                    alert("error");
+                }
+                else
+                {
+                    alert("success!");
+                }
+            });
+        });
+        
+        $( document ).ready(function() {
+            $.get('https://contact-form-ed774-default-rtdb.firebaseio.com/.json',
+            null,
+                function (res) {
+                    Object.keys(res.test).forEach((key, index)=>{
+                        res.test[key] && $('#message-history').append(
+                            `<hr>
+                            <ul class="list-group text-decoration-none">
+                                <li class="list-group-item fs-4 border-0">
+                                    <a class=" text-decoration-none" href="mailto:${res.test[key].email}">${res.test[key].name}</a>
+                                    <button class="material-icons-outlined border-0 bg-transparent" onclick="deleteMessage(this)" data-name="${res.test[key].name}">delete_forever
+                                    </button>
+                                </li>
+                                <li class="list-group-item border border-secondary rounded">${res.test[key].message}</li>
+                            </ul>`
+                        )
+                    })
+                }
+            );
+        });
+        
+    </script>
+</html>
